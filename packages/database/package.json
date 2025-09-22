@@ -1,0 +1,23 @@
+{
+  "name": "@lifeorb/prisma",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "scripts": {
+
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "exports": {
+    ".": "./src/prisma.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.16.2",
+    "prisma": "^6.16.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "typescript": "^5.9.2"
+  }
+}

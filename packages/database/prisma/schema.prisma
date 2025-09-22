@@ -1,0 +1,141 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String  @id @default(cuid())
+  email    String  @unique
+  username String? @unique
+  name     String?
+  image    String?
+  bio      String?
+
+  emailVerified DateTime?
+
+  isPublic Boolean @default(true)
+
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  Account    Account[]
+  Session    Session[]
+  Bucket     Bucket[]
+  BucketItem BucketItem[]
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model Bucket {
+  id          String  @id @default(cuid())
+  title       String
+  description String?
+
+  isPublic   Boolean @default(false)
+  isTemplate Boolean @default(false)
+
+  totalItems     Int @default(0)
+  completedItems Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId     String
+  user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  BucketItem BucketItem[]
+
+  @@map("buckets")
+}
+
+model BucketItem {
+  id          String  @id @default(cuid())
+  title       String
+  description String?
+
+  isCompleted Boolean @default(false)
+
+  location    String?
+  latitude    Float?
+  longitude   Float?
+  targetDate  DateTime?
+  completedAt DateTime?
+
+  preContent  String? @db.Text
+  postContent String? @db.Text
+
+  attachments MediaAttachment[]
+
+  order Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  bucketId String
+  bucket   Bucket @relation(fields: [bucketId], references: [id], onDelete: Cascade)
+  userId   String
+  user     User   @relation(fields: [userId], references: [id])
+
+  @@map("bucket_items")
+}
+
+model MediaAttachment {
+  id String @id @default(cuid())
+
+  filename String
+  url      String
+  type     MediaType
+  size     Int? // File size in bytes
+
+  stage ContentStage
+
+  createdAt DateTime @default(now())
+
+  bucketItemId String
+  bucketItem   BucketItem @relation(fields: [bucketItemId], references: [id], onDelete: Cascade)
+
+  @@map("media_attachments")
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+  DOCUMENT
+}
+
+enum ContentStage {
+  PRE
+  POST
+}
