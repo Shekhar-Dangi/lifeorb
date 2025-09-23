@@ -2,22 +2,27 @@
 
 import Image from "next/image";
 import { Button } from "./ui/button";
-import { useTheme } from "next-themes";
-import { Moon, Sun } from "lucide-react";
+import { ThemeToggle } from "./ThemeToggle";
 
 export default function NavBar() {
-  const { theme, setTheme } = useTheme();
   return (
     <nav className="flex flex-row justify-around items-center py-5 px-10">
       <div className="flex items-center space-x-2">
         <Image
-          src={theme === "dark" ? "/logo_dark.png" : "/logo_light.png"}
+          src="/logo_light.png"
           width={28}
           height={28}
           alt="LifeOrb Logo"
-          className="rounded-lg"
+          className="rounded-lg dark:hidden"
         />
-        <span className="text-lg font-bold">LifeOrb</span>
+        <Image
+          src="/logo_dark.png"
+          width={28}
+          height={28}
+          alt="LifeOrb Logo Dark"
+          className="rounded-lg hidden dark:block"
+        />
+        <span className="text-lg font-bold">LIFEORB</span>
       </div>
       <div
         className={`nav-background px-1  py-3  rounded-sm space-x-4 text-sm`}
@@ -31,13 +36,7 @@ export default function NavBar() {
           Sign Up
         </Button>
         <Button className="cursor-pointer">Sign In</Button>
-        <div className="cursor-pointer">
-          {theme === "light" ? (
-            <Moon onClick={() => setTheme("dark")} />
-          ) : (
-            <Sun onClick={() => setTheme("light")} />
-          )}
-        </div>
+        <ThemeToggle />
       </div>
     </nav>
   );
